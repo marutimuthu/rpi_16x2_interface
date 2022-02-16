@@ -1,0 +1,25 @@
+{
+  "name": "rpi_16x2_interface",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon app.js",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marutimuthu/rpi_16x2_interface.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "adafruit-i2c-lcd": "^2.0.0"
+  },
+  "bugs": {
+    "url": "https://github.com/marutimuthu/rpi_16x2_interface/issues"
+  },
+  "homepage": "https://github.com/marutimuthu/rpi_16x2_interface#readme"
+}
