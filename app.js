@@ -17,7 +17,8 @@ lcd.createChar(3, [31, 21, 31, 31, 14, 10, 27, 0]); // Alien
 lcd.createChar(4, [1, 3, 15, 15, 15, 3, 1, 0]); // Speaker
 lcd.createChar(5, [4, 14, 14, 14, 31, 0, 4, 0]); // Bell
 lcd.createChar(6, [0, 17, 27, 4, 4, 27, 17, 0]); // Cross
-lcd.createChar(7, [0, 14, 21, 27, 14, 14, 0, 0]); // Skull
+//lcd.createChar(7, [0, 14, 21, 27, 14, 14, 0, 0]); // Skull
+lcd.createChar(7, [0, 14, 17, 0, 4, 10, 0, 4]); // Wifi
 
 const red = lcd.colors.RED;
 const blue = lcd.colors.GREEN;
@@ -46,6 +47,25 @@ var option_d = {
   },
 };
 
+var months=["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+function synctime()
+{
+  var istdate = new Date(new Date().getTime()+ (5*60+30)*60000);
+  var date =istdate.toLocaleDateString();
+  var time =istdate.toLocaleTimeString();
+  // console.log(istdate);
+  // console.log("Date is:",date);
+  // console.log("Time is:",time);
+  var [hr,min,sec]= time.split(":");
+  var [dd,mm,yy]=date.split("/");
+  //lcd.message(months[parseInt(mm)-1]+" "+dd +" "+hr+":"+min +"  \x07"+"\nWelcome!");
+  var homepage=months[parseInt(mm)-1]+" "+dd +"  "+hr+":"+min +"  \x07"+"\nWelcome!";
+  lcd.message(homepage);
+}
+
+
+
 class Menu {
     constructor(len, option_index, cursor, prevlist) {
       
@@ -58,6 +78,7 @@ class Menu {
     }
 
     create_menu(this_d, option_index) {
+      //this.print_list(this_d, option_index);
       this.this_d = this_d;
       var i = 0;
       this.option_index=option_index;
@@ -175,9 +196,11 @@ setInterval(() => {
   lcd.backlight(randomcolors(arr));
 }, 2000);
 // lcd.backlight(red);
-lcd.message("\x00 \x01 \x02 \x03 \x04 \x05 \x06 \x07   \n  Demo Loaded!");
-lcd.clear();
-display.print_list(option_d,display.option_index);
+//lcd.message("\x00 \x01 \x02 \x03 \x04 \x05 \x06 \x07   \n  Demo Loaded!");
+//homepage(lcd.buttonName(button));
+//lcd.clear();
+//display.print_list(option_d,display.option_index);
+synctime()
 
 // show button state on lcd and console
 function displayButton(state, button) {
@@ -185,6 +208,9 @@ function displayButton(state, button) {
   lcd.message("Button: " + lcd.buttonName(button) + "\nState: " + state);
   console.log(state, lcd.buttonName(button));
 }
+
+ 
+
 
 //register events to show button press/release
 lcd.on("button_change", function (button) {
