@@ -44,7 +44,7 @@ var option_d = {
     "a. Subopt3.1": "i. Miniopt3.1",
     "b. Subopt3.2": "ii. Miniopt3.2",
     "c. Subopt3.3": "ii. Miniopt3.3",
-  },
+  }
 };
 
 var months=["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -61,20 +61,33 @@ function synctime()
   var [dd,mm,yy]=date.split("/");
   //lcd.message(months[parseInt(mm)-1]+" "+dd +" "+hr+":"+min +"  \x07"+"\nWelcome!");
   var homepage=months[parseInt(mm)-1]+" "+dd +"  "+hr+":"+min +"  \x07"+"\nWelcome!";
+  lcd.clear();
   lcd.message(homepage);
+  //display.prev_list.push(homepage);
 }
 
 
 
 class Menu {
-    constructor(len, option_index, cursor, prevlist) {
+    constructor(option_d) {
       
-      this.len = Object.keys(option_d).length;
+      //this.len = Object.keys(option_d).length;
       this.option_index = 0;
       this.cursor = [];
       this.prev_list = [];
+      this.home_flag=1;
 
       this.this_d = option_d;
+    }
+    lcd_home()
+    {
+      synctime();
+      this.home_flag=1;
+      this.prev_list.length=0;
+      this.cursor.length=0;
+      this.this_d = option_d;
+      this.option_index = 0;
+      console.log("\nIn lcd Home");
     }
 
     create_menu(this_d, option_index) {
@@ -82,18 +95,22 @@ class Menu {
       this.this_d = this_d;
       var i = 0;
       this.option_index=option_index;
+      this.len = Object.keys(this.this_d).length;
+
+     
 
       for (var val in this.this_d) {
         if (i < this.len && this.option_index == i) {
           // if (this.opt==i):
           if (typeof(this.this_d) == "object") {
-            this.prev_list.push(this.this_d);
+             this.prev_list.push(this.this_d);
             //console.log(this.prev_list);
             lcd.clear();
             this.print_list(this.this_d[val], 0);
             console.log("inside create menu");
             this.cursor.push(this.option_index);
           }
+          //this.prev_list.push(this.this_d);
           this.option_index = 0;
         }
         i += 1;
@@ -102,6 +119,7 @@ class Menu {
     }
 
     print_list(this_d, cursor) {
+      clearTimeout(display_home);
       this.this_d = this_d;
 
       var temp_list = [];
@@ -134,13 +152,18 @@ class Menu {
     handle_menu(button){
       switch (button) {
     
-      case "SELECT":
+      // case "SELECT":
        
-        this.create_menu(this.this_d,this.option_index);
-        break;
+      //   this.create_menu(this.this_d,this.option_index);
+      //   break;
       case "RIGHT":
-        
-        this.create_menu(this.this_d,this.option_index);
+        if(this.home_flag==1)
+        {
+          this.print_list(this.this_d,this.option_index);
+          this.home_flag=0;
+        }
+        else
+          this.create_menu(this.this_d,this.option_index);
         break;
       case "UP":
        
@@ -172,8 +195,10 @@ class Menu {
         break;
        
       default:
-        
-
+        console.log("\n In handle menu")
+            // setInterval(() => {
+            //   lcd_home()
+            // }, 10000);
         return void 0;
       }
     }
@@ -185,7 +210,7 @@ class Menu {
 
 
 
-let display=  new Menu();
+let display=  new Menu(option_d);
 
 var arr = [red, blue, green, white, yellow, on, off];
 function randomcolors(arr) {
@@ -200,7 +225,9 @@ setInterval(() => {
 //homepage(lcd.buttonName(button));
 //lcd.clear();
 //display.print_list(option_d,display.option_index);
-synctime()
+
+//synctime();
+
 
 // show button state on lcd and console
 function displayButton(state, button) {
@@ -222,9 +249,24 @@ lcd.on("button_change", function (button) {
 // //   displayButton("pressed", button);
 //     display.handle_menu("pressed",lcd.buttonName(button));
 // });
+synctime();
+ display_home=setInterval(() => {
+    display.lcd_home()
+  }, 20000);
+// 
 
 lcd.on("button_up", function (button) {
    //displayButton("released", button);
    //lcd.clear();
+   //synctime();
+  //  if(lcd.buttonName(button)=="RIGHT"){
+     clearTimeout(display_home);
+    
     display.handle_menu(lcd.buttonName(button));
+    display_home=setInterval(() => {
+      display.lcd_home()
+    }, 20000);
+   //}
 });
+
+
